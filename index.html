@@ -7,99 +7,101 @@
 <style>
 body {
     margin:0;
-    font-family: Arial;
-    background: linear-gradient(135deg,#e6f0ff,#ffffff);
-    overflow-x:hidden;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg,#4facfe,#e0f7ff);
 }
 
+/* HEADER */
 header {
-    background:#007bff;
+    background: linear-gradient(90deg,#007bff,#00c6ff);
     color:white;
     text-align:center;
-    padding:20px;
-    font-size:28px;
+    padding:25px;
+    font-size:30px;
+    letter-spacing:1px;
 }
 
-/* CARD */
+/* CARD GLASS STYLE */
 .card {
-    background:white;
+    backdrop-filter: blur(10px);
+    background: rgba(255,255,255,0.8);
     margin:20px auto;
     padding:20px;
-    width:80%;
-    border-radius:15px;
+    width:85%;
+    border-radius:20px;
     text-align:center;
-    box-shadow:0 0 10px rgba(0,0,0,0.1);
+    box-shadow:0 8px 20px rgba(0,0,0,0.1);
 }
 
 /* BUTTON */
 button {
-    background:#007bff;
+    background: linear-gradient(90deg,#007bff,#00c6ff);
     color:white;
     padding:10px 20px;
     border:none;
-    border-radius:10px;
+    border-radius:12px;
     cursor:pointer;
+    font-weight:bold;
 }
-button:hover { background:#0056b3; }
+button:hover {
+    opacity:0.9;
+}
 
 /* MISSIONS */
 .mission {
-    background:#f1f7ff;
+    background:white;
+    margin:10px;
+    padding:10px;
+    border-radius:12px;
+}
+
+/* PROJECTS */
+#projects div {
+    background:#ffffff;
     margin:10px;
     padding:10px;
     border-radius:10px;
 }
 
-/* FLOATING ICONS */
-.scratch-icon {
-    position:fixed;
-    width:60px;
-    opacity:0.7;
-    animation: float 10s linear infinite;
-}
-@keyframes float {
-    from { transform: translateY(100vh) rotate(0deg); }
-    to { transform: translateY(-100vh) rotate(360deg); }
+/* TUTORIALS GRID */
+.tutorials {
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap:20px;
 }
 
-/* CERTIFICATE PRO */
+.tutorial-card {
+    background:white;
+    border-radius:15px;
+    padding:10px;
+    width:300px;
+    box-shadow:0 5px 15px rgba(0,0,0,0.1);
+}
+
+.tutorial-card a {
+    display:block;
+    margin-top:8px;
+    color:#007bff;
+    font-weight:bold;
+    text-decoration:none;
+}
+
+/* CERTIFICATE */
 #certificate {
     display:none;
-    background: linear-gradient(white,#f0f8ff);
-    border: 12px double #007bff;
-    padding:40px;
+    background:white;
+    border:10px double #007bff;
+    padding:30px;
     margin:20px;
     text-align:center;
-}
-#certificate h1 {
-    font-size:45px;
-    color:#007bff;
-}
-#certificate h2 {
-    font-size:30px;
-}
-#certificate p {
-    font-size:20px;
-}
-
-/* PROJECT LIST */
-#projects div {
-    background:#eef5ff;
-    margin:10px;
-    padding:10px;
-    border-radius:10px;
 }
 </style>
 </head>
 
 <body>
 
-<header>🎮 Scratch Learning Website</header>
-
-<!-- FLOATING SCRATCH ICONS -->
-<img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Scratch.logo.S.png" class="scratch-icon" style="left:10%;">
-<img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Scratch.logo.S.png" class="scratch-icon" style="left:50%; animation-duration:8s;">
-<img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Scratch.logo.S.png" class="scratch-icon" style="left:80%; animation-duration:12s;">
+<header>🎮 Scratch Learning Platform</header>
 
 <!-- PROFILE -->
 <div class="card">
@@ -117,27 +119,49 @@ button:hover { background:#0056b3; }
 <p>⭐ Points: <span id="points">0</span></p>
 </div>
 
-<!-- ADD PROJECT -->
+<!-- PROJECTS -->
 <div class="card">
 <h2>➕ Add Project</h2>
-<input id="projectInput" placeholder="Enter project name">
+<input id="projectInput" placeholder="Project name">
 <button onclick="addProject()">Add</button>
-
 <div id="projects"></div>
 </div>
 
 <!-- TUTORIALS -->
 <div class="card">
-<h2>🎥 Tutorials</h2>
-<p>Watch and learn Scratch:</p>
+<h2>🎥 Scratch Tutorials</h2>
 
-<iframe width="300" height="170"
+<div class="tutorials">
+
+<div class="tutorial-card">
+<iframe width="100%" height="170"
 src="https://www.youtube.com/embed/1jHvXakt1qw"
 frameborder="0" allowfullscreen></iframe>
+<a href="https://www.youtube.com/watch?v=1jHvXakt1qw" target="_blank">
+Watch on YouTube 🔗
+</a>
+</div>
 
-<iframe width="300" height="170"
+<div class="tutorial-card">
+<iframe width="100%" height="170"
 src="https://www.youtube.com/embed/Fa4cRMaTDUI"
 frameborder="0" allowfullscreen></iframe>
+<a href="https://www.youtube.com/watch?v=Fa4cRMaTDUI" target="_blank">
+Watch on YouTube 🔗
+</a>
+</div>
+
+<div class="tutorial-card">
+<iframe width="100%" height="170"
+src="https://www.youtube.com/embed/VIpmkeqJhmE"
+frameborder="0" allowfullscreen></iframe>
+<a href="https://www.youtube.com/watch?v=VIpmkeqJhmE" target="_blank">
+Watch on YouTube 🔗
+</a>
+</div>
+
+</div>
+
 </div>
 
 <!-- CERTIFICATE -->
@@ -178,12 +202,12 @@ function loadMissions(){
     missions.forEach((m,i)=>{
         let div = document.createElement("div");
         div.className="mission";
-        div.innerHTML = `${m}<br><button onclick="complete(${i})">Complete</button>`;
+        div.innerHTML = `${m}<br><button onclick="complete()">Complete</button>`;
         container.appendChild(div);
     });
 }
 
-function complete(i){
+function complete(){
     points = parseInt(points) + 20;
     localStorage.setItem("points", points);
     document.getElementById("points").innerText = points;
@@ -196,7 +220,6 @@ function addProject(){
 
     let div = document.createElement("div");
     div.innerText = input;
-
     document.getElementById("projects").appendChild(div);
 }
 
@@ -219,7 +242,6 @@ function downloadCertificate(){
     });
 }
 
-// INIT
 loadMissions();
 </script>
 
