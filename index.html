@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Scratch Pro Platform</title>
+
+<!-- Firebase SDK -->
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+
+<style>
+body {
+    font-family: Arial;
+    margin:0;
+    background: linear-gradient(135deg,#e6f0ff,#ffffff);
+}
+header {
+    background:#007bff;
+    color:white;
+    text-align:center;
+    padding:20px;
+}
+.card {
+    background:white;
+    margin:20px auto;
+    padding:20px;
+    width:80%;
+    border-radius:15px;
+    text-align:center;
+}
+button {
+    background:#007bff;
+    color:white;
+    padding:10px;
+    border:none;
+    border-radius:10px;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<header>🔥 Scratch Pro Platform</header>
+
+<!-- ACCOUNT SYSTEM -->
+<div class="card">
+<h2>👥 Account System</h2>
+
+<input id="email" placeholder="Email"><br><br>
+<input id="password" type="password" placeholder="Password"><br><br>
+
+<button onclick="register()">Register</button>
+<button onclick="login()">Login</button>
+<button onclick="logout()">Logout</button>
+
+<p id="userInfo"></p>
+</div>
+
+<!-- MISSIONS -->
+<div class="card">
+<h2>🧠 Daily Missions</h2>
+<button onclick="completeMission()">Complete Mission (+20)</button>
+
+<p>⭐ Points: <span id="points">0</span></p>
+</div>
+
+<script>
+// 🔥 YOUR FIREBASE CONFIG (ADDED CORRECTLY)
+const firebaseConfig = {
+  apiKey: "AIzaSyBhJn3H42YQM3Kox4LhTcTxGjWzrXiqkb0",
+  authDomain: "scratch-with-jamilbakri.firebaseapp.com",
+  projectId: "scratch-with-jamilbakri",
+  storageBucket: "scratch-with-jamilbakri.firebasestorage.app",
+  messagingSenderId: "1030325119183",
+  appId: "1:1030325119183:web:7b7a56544c83595b8b2fba",
+  measurementId: "G-9ZWHS9BEZ0"
+};
+
+// 🔥 FIX (important for v10 SDK)
+firebase.initializeApp(firebaseConfig);
+
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+// REGISTER
+function register(){
+    let email = document.getElementById("email").value;
+    let pass = document.getElementById("password").value;
+
+    auth.createUserWithEmailAndPassword(email, pass)
+    .then(user=>{
+        db.collection("users").doc(user.user.uid).set({
+            points: 0
+        });
+    })
+    .catch(err=>alert(err.message));
+}
+
+// LOGIN
+function login(){
+    let email = document.getElementById("email").value;
+    let pass = document.getElementById("password").value;
+
+    auth.signInWithEmailAndPassword(email, pass)
+    .catch(err=>alert(err.message));
+}
+
+// LOGOUT
+function logout(){
+    auth.signOut();
+}
+
+// TRACK USER
+auth.onAuthStateChanged(user=>{
+    if(user){
+        document.getElementById("userInfo").innerText = "Logged in: " + user.email;
+        loadData(user.uid);
+    } else {
+        document.getElementById("userInfo").innerText = "Not logged in";
+        document.getElementById("points").innerText = 0;
+    }
+});
+
+// LOAD DATA
+function loadData(uid){
+    db.collection("users").doc(uid).get().then(doc=>{
+        if(doc.exists){
+            let data = doc.data();
+            document.getElementById("points").innerText = data.points;
+        }
+    });
+}
+
+// SAVE PROGRESS
+function completeMission(){
+    let user = auth.currentUser;
+    if(!user) return alert("Login first");
+
+    let ref = db.collection("users").doc(user.uid);
+
+    ref.get().then(doc=>{
+        let pts = (doc.data()?.points || 0) + 20;
+
+        ref.set({points: pts});
+        document.getElementById("points").innerText = pts;
+    });
+}
+</script>
+
+</body>
+</html>
