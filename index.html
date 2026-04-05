@@ -2,25 +2,25 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<title>Scratch Pro Platform</title>
-
-<!-- Firebase SDK -->
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js"></script>
+<title>Scratch Learning Website</title>
 
 <style>
 body {
-    font-family: Arial;
     margin:0;
+    font-family: Arial;
     background: linear-gradient(135deg,#e6f0ff,#ffffff);
+    overflow-x:hidden;
 }
+
 header {
     background:#007bff;
     color:white;
     text-align:center;
     padding:20px;
+    font-size:28px;
 }
+
+/* CARD */
 .card {
     background:white;
     margin:20px auto;
@@ -28,125 +28,199 @@ header {
     width:80%;
     border-radius:15px;
     text-align:center;
+    box-shadow:0 0 10px rgba(0,0,0,0.1);
 }
+
+/* BUTTON */
 button {
     background:#007bff;
     color:white;
-    padding:10px;
+    padding:10px 20px;
     border:none;
     border-radius:10px;
     cursor:pointer;
+}
+button:hover { background:#0056b3; }
+
+/* MISSIONS */
+.mission {
+    background:#f1f7ff;
+    margin:10px;
+    padding:10px;
+    border-radius:10px;
+}
+
+/* FLOATING ICONS */
+.scratch-icon {
+    position:fixed;
+    width:60px;
+    opacity:0.7;
+    animation: float 10s linear infinite;
+}
+@keyframes float {
+    from { transform: translateY(100vh) rotate(0deg); }
+    to { transform: translateY(-100vh) rotate(360deg); }
+}
+
+/* CERTIFICATE PRO */
+#certificate {
+    display:none;
+    background: linear-gradient(white,#f0f8ff);
+    border: 12px double #007bff;
+    padding:40px;
+    margin:20px;
+    text-align:center;
+}
+#certificate h1 {
+    font-size:45px;
+    color:#007bff;
+}
+#certificate h2 {
+    font-size:30px;
+}
+#certificate p {
+    font-size:20px;
+}
+
+/* PROJECT LIST */
+#projects div {
+    background:#eef5ff;
+    margin:10px;
+    padding:10px;
+    border-radius:10px;
 }
 </style>
 </head>
 
 <body>
 
-<header>🔥 Scratch Pro Platform</header>
+<header>🎮 Scratch Learning Website</header>
 
-<!-- ACCOUNT SYSTEM -->
+<!-- FLOATING SCRATCH ICONS -->
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Scratch.logo.S.png" class="scratch-icon" style="left:10%;">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Scratch.logo.S.png" class="scratch-icon" style="left:50%; animation-duration:8s;">
+<img src="https://upload.wikimedia.org/wikipedia/commons/7/75/Scratch.logo.S.png" class="scratch-icon" style="left:80%; animation-duration:12s;">
+
+<!-- PROFILE -->
 <div class="card">
-<h2>👥 Account System</h2>
-
-<input id="email" placeholder="Email"><br><br>
-<input id="password" type="password" placeholder="Password"><br><br>
-
-<button onclick="register()">Register</button>
-<button onclick="login()">Login</button>
-<button onclick="logout()">Logout</button>
-
-<p id="userInfo"></p>
+<h2>👤 Profile</h2>
+<p><b>Name:</b> jamilbakri</p>
+<p><b>Age:</b> 10</p>
+<p><b>Bio:</b> Instructor of Scratch</p>
+<p><b>Phone:</b> 357+94020504</p>
 </div>
 
 <!-- MISSIONS -->
 <div class="card">
 <h2>🧠 Daily Missions</h2>
-<button onclick="completeMission()">Complete Mission (+20)</button>
-
+<div id="missions"></div>
 <p>⭐ Points: <span id="points">0</span></p>
 </div>
 
+<!-- ADD PROJECT -->
+<div class="card">
+<h2>➕ Add Project</h2>
+<input id="projectInput" placeholder="Enter project name">
+<button onclick="addProject()">Add</button>
+
+<div id="projects"></div>
+</div>
+
+<!-- TUTORIALS -->
+<div class="card">
+<h2>🎥 Tutorials</h2>
+<p>Watch and learn Scratch:</p>
+
+<iframe width="300" height="170"
+src="https://www.youtube.com/embed/1jHvXakt1qw"
+frameborder="0" allowfullscreen></iframe>
+
+<iframe width="300" height="170"
+src="https://www.youtube.com/embed/Fa4cRMaTDUI"
+frameborder="0" allowfullscreen></iframe>
+</div>
+
+<!-- CERTIFICATE -->
+<div class="card">
+<h2>📜 Certificate</h2>
+<input id="username" placeholder="Enter your name"><br><br>
+<button onclick="generateCertificate()">Generate</button>
+<button onclick="downloadCertificate()">Download</button>
+</div>
+
+<div id="certificate">
+<h1>🏆 Certificate of Achievement</h1>
+<p>This certificate is proudly awarded to</p>
+<h2 id="certName"></h2>
+<p>For completing Scratch Training</p>
+<p><b>Instructor:</b> Jamil Bakri</p>
+<p>Date: <span id="date"></span></p>
+</div>
+
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+
 <script>
-// 🔥 YOUR FIREBASE CONFIG (ADDED CORRECTLY)
-const firebaseConfig = {
-  apiKey: "AIzaSyBhJn3H42YQM3Kox4LhTcTxGjWzrXiqkb0",
-  authDomain: "scratch-with-jamilbakri.firebaseapp.com",
-  projectId: "scratch-with-jamilbakri",
-  storageBucket: "scratch-with-jamilbakri.firebasestorage.app",
-  messagingSenderId: "1030325119183",
-  appId: "1:1030325119183:web:7b7a56544c83595b8b2fba",
-  measurementId: "G-9ZWHS9BEZ0"
-};
+// MISSIONS
+let missions = [
+    "Create animation 🎬",
+    "Make a game 🎮",
+    "Add sound 🔊",
+    "Share project 🌍"
+];
 
-// 🔥 FIX (important for v10 SDK)
-firebase.initializeApp(firebaseConfig);
+let points = localStorage.getItem("points") || 0;
+document.getElementById("points").innerText = points;
 
-const auth = firebase.auth();
-const db = firebase.firestore();
+function loadMissions(){
+    let container = document.getElementById("missions");
+    container.innerHTML = "";
 
-// REGISTER
-function register(){
-    let email = document.getElementById("email").value;
-    let pass = document.getElementById("password").value;
-
-    auth.createUserWithEmailAndPassword(email, pass)
-    .then(user=>{
-        db.collection("users").doc(user.user.uid).set({
-            points: 0
-        });
-    })
-    .catch(err=>alert(err.message));
-}
-
-// LOGIN
-function login(){
-    let email = document.getElementById("email").value;
-    let pass = document.getElementById("password").value;
-
-    auth.signInWithEmailAndPassword(email, pass)
-    .catch(err=>alert(err.message));
-}
-
-// LOGOUT
-function logout(){
-    auth.signOut();
-}
-
-// TRACK USER
-auth.onAuthStateChanged(user=>{
-    if(user){
-        document.getElementById("userInfo").innerText = "Logged in: " + user.email;
-        loadData(user.uid);
-    } else {
-        document.getElementById("userInfo").innerText = "Not logged in";
-        document.getElementById("points").innerText = 0;
-    }
-});
-
-// LOAD DATA
-function loadData(uid){
-    db.collection("users").doc(uid).get().then(doc=>{
-        if(doc.exists){
-            let data = doc.data();
-            document.getElementById("points").innerText = data.points;
-        }
+    missions.forEach((m,i)=>{
+        let div = document.createElement("div");
+        div.className="mission";
+        div.innerHTML = `${m}<br><button onclick="complete(${i})">Complete</button>`;
+        container.appendChild(div);
     });
 }
 
-// SAVE PROGRESS
-function completeMission(){
-    let user = auth.currentUser;
-    if(!user) return alert("Login first");
+function complete(i){
+    points = parseInt(points) + 20;
+    localStorage.setItem("points", points);
+    document.getElementById("points").innerText = points;
+}
 
-    let ref = db.collection("users").doc(user.uid);
+// PROJECTS
+function addProject(){
+    let input = document.getElementById("projectInput").value;
+    if(input==="") return;
 
-    ref.get().then(doc=>{
-        let pts = (doc.data()?.points || 0) + 20;
+    let div = document.createElement("div");
+    div.innerText = input;
 
-        ref.set({points: pts});
-        document.getElementById("points").innerText = pts;
+    document.getElementById("projects").appendChild(div);
+}
+
+// CERTIFICATE
+function generateCertificate(){
+    let name = document.getElementById("username").value;
+    if(name==="") return alert("Enter name");
+
+    document.getElementById("certName").innerText = name;
+    document.getElementById("certificate").style.display="block";
+    document.getElementById("date").innerText = new Date().toLocaleDateString();
+}
+
+function downloadCertificate(){
+    html2canvas(document.getElementById("certificate")).then(canvas=>{
+        let link=document.createElement("a");
+        link.download="certificate.png";
+        link.href=canvas.toDataURL();
+        link.click();
     });
 }
+
+// INIT
+loadMissions();
 </script>
 
 </body>
